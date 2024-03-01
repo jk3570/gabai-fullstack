@@ -6,8 +6,6 @@ import { useAuthContext } from "../hooks/useAuthContext";
 // Components
 import Search from "../search/search";
 import Sect2 from "../components/landingPage/sect2";
-import Sect3 from "../components/landingPage/sect3";
-import Sect4 from "../components/landingPage/sect4";
 
 function LandingPage() {
   const { user, dispatch } = useAuthContext();
@@ -34,15 +32,6 @@ function LandingPage() {
         <Sect2 />
       </section>
 
-      <section>
-        {/* 3rd section of landing page */}
-        <Sect3 />
-      </section>
-
-      <section>
-        {/* 4th section of landing page */}
-        <Sect4 />
-      </section>
       {/* 
       Logout button */}
       {user && <button onClick={handleLogout}>Logout</button>}
