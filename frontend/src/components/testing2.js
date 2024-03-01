@@ -1,88 +1,27 @@
-import { useForm } from "react-hook-form";
-import { useState, useEffect } from "react";
-import { regions, provinces, cities, barangays } from 'select-philippines-address';
-import { useSignup } from "../hooks/useSignup";
+import React, { useState, useEffect } from "react";
 import Popup from "reactjs-popup";
 import { IoIosCloseCircleOutline } from "react-icons/io";
+import { useForm } from "react-hook-form";
+import { useSignup } from "../hooks/useSignup";
+import { regions, provinces, cities, barangays } from 'select-philippines-address';
 
-const Signup = ( {initialAddress }) => {
-
-  const [selectedRegion, setSelectedRegion] = useState('');
-  const [selectedProvince, setSelectedProvince] = useState('');
-  const [selectedCity, setSelectedCity] = useState('');
-  const [selectedBarangay, setSelectedBarangay] = useState('');
-
-  const [regionOptions, setRegionOptions] = useState([]);
-  const [provinceOptions, setProvinceOptions] = useState([]);
-  const [cityOptions, setCityOptions] = useState([]);
-  const [barangayOptions, setBarangayOptions] = useState([]);
-
-  const { register, handleSubmit, formState: { errors }, watch } = useForm();
+const Signup = () => {
+  const { register, handleSubmit, formState: { errors }, watch, setValue } = useForm();
   const passwordValue = watch("password");
   const [step, setStep] = useState(1);
   const [passwordMatchError, setPasswordMatchError] = useState(false);
   const { signup, error, isLoading } = useSignup();
 
-    // Fetch regions on component mount
-    useEffect(() => {
-      regions()
-          .then((regionList) => {
-              console.log('Fetched regions:', regionList); // Log fetched regions
-              setRegionOptions(regionList);
-              if (initialAddress && initialAddress.region) {
-                  setSelectedRegion(initialAddress.region.region_code);
-              }
-          })
-          .catch(error => {
-              console.error('Error fetching regions:', error);
-          });
-  }, [initialAddress]);
+  const [regionData, setRegionData] = useState([]);
+  const [provinceData, setProvinceData] = useState([]);
+  const [cityData, setCityData] = useState([]);
+  const [barangayData, setBarangayData] = useState([]);
 
-    // Fetch provinces when region changes
-    useEffect(() => {
-        console.log('Selected region:', selectedRegion); // Log selected region
-        if (selectedRegion) {
-            provinces(selectedRegion)
-                .then((provinceList) => {
-                    console.log('Fetched provinces:', provinceList); // Log fetched provinces
-                    setProvinceOptions(provinceList);
-                    setSelectedProvince(''); // Reset selected province when region changes
-                })
-                .catch(error => {
-                    console.error('Error fetching provinces:', error);
-                });
-        }
-    }, [selectedRegion]);
-
-    // Fetch cities when province changes
-    useEffect(() => {
-        if (selectedProvince) {
-            cities(selectedProvince)
-                .then((cityList) => {
-                    console.log('Fetched cities:', cityList); // Log fetched cities
-                    setCityOptions(cityList);
-                    setSelectedCity(''); // Reset selected city when province changes
-                })
-                .catch(error => {
-                    console.error('Error fetching cities:', error);
-                });
-        }
-    }, [selectedProvince]);
-
-    // Fetch barangays when city changes
-    useEffect(() => {
-        if (selectedCity) {
-            barangays(selectedCity)
-                .then((barangayList) => {
-                    console.log('Fetched barangays:', barangayList); // Log fetched barangays
-                    setBarangayOptions(barangayList);
-                    setSelectedBarangay(''); // Reset selected barangay when city changes
-                })
-                .catch(error => {
-                    console.error('Error fetching barangays:', error);
-                });
-        }
-    }, [selectedCity]);
+  useEffect(() => {
+    regions().then(response => {
+      setRegionData(response);
+    });
+  }, []);
 
   const nextStep = async () => {
     switch (step) {
@@ -132,23 +71,32 @@ const Signup = ( {initialAddress }) => {
       return;
     }
     setPasswordMatchError(false);
+    await signup(data.username, data.firstname, data.lastname, data.gender, data.birthdate, data.region, data.province, data.city, data.barangay, data.email, data.password);
+  };
 
+  const handleRegionChange = async (e) => {
+    const regionCode = e.target.value;
+    setValue("region", regionCode); // Update form value
+    provinces(regionCode).then(response => {
+      setProvinceData(response);
+    });
+  };
 
-        // Convert region code to name
-        const selectedRegionName = regionOptions.find(region => region.region_code === data.region)?.region_name || '';
+  const handleProvinceChange = async (e) => {
+    const provinceCode = e.target.value;
+    setValue("province", provinceCode); // Update form value
+    cities(provinceCode).then(response => {
+      setCityData(response);
+    });
+  };
 
-        // Convert province code to name
-        const selectedProvinceName = provinceOptions.find(province => province.province_code === data.province)?.province_name || '';
-
-        // Convert city code to name
-        const selectedCityName = cityOptions.find(city => city.city_code === data.city)?.city_name || '';
-
-        // Convert barangay code to name
-        const selectedBarangayName = barangayOptions.find(barangay => barangay.brgy_code === data.barangay)?.brgy_name || '';
-
-        // Call signup function with converted address names
-        await signup(data.username, data.firstname, data.lastname, data.gender, data.birthdate, selectedRegionName, selectedProvinceName, selectedCityName, selectedBarangayName, data.email, data.password);
-};
+  const handleCityChange = async (e) => {
+    const cityCode = e.target.value;
+    setValue("city", cityCode); // Update form value
+    barangays(cityCode).then(response => {
+      setBarangayData(response);
+    });
+  };
 
   return (
     <Popup
@@ -178,7 +126,7 @@ const Signup = ( {initialAddress }) => {
                 {step === 1 && (
                   <>
                     <b>Personal Information 1/3</b>
-                    <label htmlFor="firstname">First Name</label>
+                   <label htmlFor="firstname">First Name</label>
                     <input
                       type="text"
                       name="firstname"
@@ -263,88 +211,81 @@ const Signup = ( {initialAddress }) => {
                     {errors.birthdate && errors.birthdate.type === "validAge" && (
                       <span className="error">You must be 18 years old or above</span>
                     )}
-
-                    {/* Next button */}
                     <button type="button" onClick={nextStep}>Next</button>
                   </>
                 )}
 
                 {step === 2 && (
                   <>
-                    {/* Your fields for Address here */}
                     <div className="flex flex-col">
                       <b>Address Information 2/3</b>
                       {/* Region */}
                       <label htmlFor="region">Region</label>
-                      <select name="region"
+                      <select
+                        name="region"
                         id="region"
+                        onChange={handleRegionChange}
                         {...register("region", { required: true })}
-                        className="w-[full] border-2 border-black rounded-xl p-2" 
-                        value={selectedRegion} onChange={(e) => setSelectedRegion(e.target.value)}>
-                          <option value="">-- Select Region --</option>
-                          {regionOptions.map((region) => (
-                              <option key={region.region_code} value={region.region_code}>{region.region_name}</option>
-                          ))}
+                        className="w-[full] border-2 border-black rounded-xl p-2"
+                      >
+                        <option value="">- Select Region -</option>
+                        {regionData.map(region => (
+                          <option key={region.region_code} value={region.region_code}>{region.region_name}</option>
+                        ))}
                       </select>
                       {errors.region && <span className="error">Region is required</span>}
-                    </div>
 
                       {/* Province */}
-                    <div className="flex flex-col">
                       <label htmlFor="province">Province</label>
-                      <select name="province"
+                      <select
+                        name="province"
                         id="province"
+                        onChange={handleProvinceChange}
                         {...register("province", { required: true })}
                         className="w-[full] border-2 border-black rounded-xl p-2"
-                        value={selectedProvince} onChange={(e) => setSelectedProvince(e.target.value)}>
-                          <option value="">-- Select Province --</option>
-                          {provinceOptions.map((province) => (
-                              <option key={province.province_code} value={province.province_code}>{province.province_name}</option>
-                          ))}
+                      >
+                        <option value="">- Select Province -</option>
+                        {provinceData.map(province => (
+                          <option key={province.province_code} value={province.province_code}>{province.province_name}</option>
+                        ))}
                       </select>
                       {errors.province && <span className="error">Province is required</span>}
-                    </div>
 
-                    {/* City */}
-                    <div className="flex flex-col">
+                      {/* City */}
                       <label htmlFor="city">City</label>
-                      <select name="city"
+                      <select
+                        name="city"
                         id="city"
+                        onChange={handleCityChange}
                         {...register("city", { required: true })}
-                        className="w-[full] border-2 border-black rounded-xl p-2" 
-                        value={selectedCity} onChange={(e) => setSelectedCity(e.target.value)}>
-
-                        <option value="">-- Select City --</option>
-                        {cityOptions.map((city) => (
-                            <option key={city.city_code} value={city.city_code}>{city.city_name}</option>
+                        className="w-[full] border-2 border-black rounded-xl p-2"
+                      >
+                        <option value="">- Select City -</option>
+                        {cityData.map(city => (
+                          <option key={city.city_code} value={city.city_code}>{city.city_name}</option>
                         ))}
-
                       </select>
                       {errors.city && <span className="error">City is required</span>}
-                    </div>
 
                       {/* Barangay */}
-                      <div className="flex flex-col">
-                        <label htmlFor="barangay">Barangay</label>
-                        <select name="barangay"
-                          id="barangay"
-                          {...register("barangay", { required: true })}
-                          className="w-[full] border-2 border-black rounded-xl p-2" 
-                          value={selectedBarangay} onChange={(e) => setSelectedBarangay(e.target.value)}>
+                      <label htmlFor="barangay">Barangay</label>
+                      <select
+                        name="barangay"
+                        id="barangay"
+                        {...register("barangay", { required: true })}
+                        className="w-[full] border-2 border-black rounded-xl p-2"
+                      >
+                        <option value="">- Select Barangay -</option>
+                        {barangayData.map(barangay => (
+                          <option key={barangay.brgy_code} value={barangay.brgy_code}>{barangay.brgy_name}</option>
+                        ))}
+                      </select>
+                      {errors.barangay && <span className="error">Barangay is required</span>}
 
-                            <option value="">-- Select Barangay --</option>
-                            {barangayOptions.map((barangay) => (
-                                <option key={barangay.brgy_code} value={barangay.brgy_code}>{barangay.brgy_name}</option>
-                            ))}
-
-                        </select>
-                        {errors.barangay && <span className="error">Barangay is required</span>}
-                      </div>
-
+                    </div>
 
                     <a href="#" onClick={prevStep}>Previous</a>
                     <button type="button" onClick={nextStep}>Next</button>
-
                   </>
                 )}
 
@@ -448,10 +389,8 @@ const Signup = ( {initialAddress }) => {
                       )}
 
                       <a href="#" onClick={prevStep}>Previous</a>
-
-                      <button type="submit" className="w-full bg-azure-500 text-white font-bold rounded-xl p-2" disabled={error || isLoading || passwordMatchError}>
-                        Sign Up Now!
-                      </button>
+                      {/* Submit button */}
+                      <button type="submit">Sign Up Now!</button>
                     </div>
                   </>
                 )}

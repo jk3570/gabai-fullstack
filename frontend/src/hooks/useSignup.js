@@ -9,10 +9,12 @@ export const useSignup = () => {
   const signup = async (username,
     firstname,
     lastname,
-    sex,
+    gender,
     birthdate,
     region,
+    province,
     city,
+    barangay,
     email,
     password) => {
     setIsLoading(true)
@@ -24,10 +26,12 @@ export const useSignup = () => {
       body: JSON.stringify({ username,
         firstname,
         lastname,
-        sex,
+        gender,
         birthdate,
         region,
+        province,
         city,
+        barangay,
         email,
         password})
     })

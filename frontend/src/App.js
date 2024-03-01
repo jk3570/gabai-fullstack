@@ -22,8 +22,8 @@ import Footer from "./components/footer";
 import LandingPage from "./pages/landingPage";
 import Results from "./pages/search/results";
 import Search from "./pages/search/search";
-import Login from "./components/Login";
-import Signup from "./components/Signup";
+import Login from "./components/login";
+import Signup from "./components/signup";
 import Terms from "./components/terms";
 import UserList from "./pages/admin/users";
 import Chat from "./pages/chat/chat";
@@ -81,15 +81,15 @@ const App = () => {
           <Routes>
             <Route 
                 path="/" 
-                element={user ? <Home /> : <Navigate to="/login" />} 
+                element={<Home />} 
               />
               <Route 
                 path="/login" 
-                element={!user ? <Login /> : <Navigate to="/" />} 
+                element={<Login />} 
               />
               <Route 
                 path="/signup" 
-                element={!user ? <Signup /> : <Navigate to="/" />} 
+                element={<Signup />} 
               />
 
               {/*  Landing Page Route  

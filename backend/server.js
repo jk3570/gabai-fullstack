@@ -19,7 +19,7 @@ app.use((req, res, next) => {
 app.use('/api/user', userRoutes)
 
 // connect to db
-mongoose.connect("mongodb+srv://gadinganjokobscs2020:NC9y0mL9CAHM7M18@cluster0.nslphf4.mongodb.net/?retryWrites=true&w=majority")
+mongoose.connect("mongodb+srv://jokogadingan357:AFUN1idU7d7ImLqD@cluster0.q6hd8be.mongodb.net/gabai")
   .then(() => {
     // listen for requests
     app.listen(process.env.PORT, () => {

@@ -4,7 +4,7 @@ const validator = require('validator')
 
 const Schema = mongoose.Schema
 
-// user structure in database
+// User structure in database
 const userSchema = new Schema({
   username: {
     type: String,
@@ -19,9 +19,9 @@ const userSchema = new Schema({
     type: String,
     required: true
   },
-  sex: {
+  gender: {
     type: String,
-    enum: ['male', 'female'],
+    enum: ['Male', 'Female', 'LGBTQ', 'Prefer not to answer'],
     required: true
   },
   birthdate: {
@@ -32,7 +32,15 @@ const userSchema = new Schema({
     type: String,
     required: true
   },
+  province: {
+    type: String,
+    required: true
+  },
   city: {
+    type: String,
+    required: true
+  },
+  barangay: {
     type: String,
     required: true
   },
@@ -47,20 +55,22 @@ const userSchema = new Schema({
   }
 })
 
-  // static signup method
+// Static signup method
 userSchema.statics.signup = async function(username,
   firstname,
   lastname,
-  sex,
+  gender,
   birthdate,
   region,
+  province,
   city,
+  barangay,
   email,
   password) {
   
-  // validation of all fields
-  if (!username || !firstname || !lastname || !sex || !birthdate || !region || !city || !email || !password) {
-    throw Error('All fields must be filled')
+  // Validation of all fields
+  if (!username || !firstname || !lastname || !gender || !birthdate || !region || !city || !email || !password) {
+    throw Error('All fields are required')
   }
   if (!validator.isEmail(email)) {
     throw Error('Email not valid')
@@ -78,30 +88,35 @@ userSchema.statics.signup = async function(username,
   const salt = await bcrypt.genSalt(10)
   const hash = await bcrypt.hash(password, salt)
 
-
-  // inserting data to database
-  const user = await this.create({ username,
+  // Inserting data to database
+  const user = await this.create({ 
+    username,
     firstname,
     lastname,
-    sex,
+    gender,
     birthdate,
     region,
+    province,
     city,
-    email, password: hash })
+    barangay,
+    email, 
+    password: hash })
 
   return user
 }
 
-// static login method
-userSchema.statics.login = async function(email, password) {
+// Static login method
+userSchema.statics.login = async function(identifier, password) {
 
-  if (!email || !password) {
-    throw Error('All fields must be filled')
+  if (!identifier || !password) {
+    throw Error('All fields are required')
   }
 
-  const user = await this.findOne({ email })
+  const user = await this.findOne({
+    $or: [{ username: identifier }, { email: identifier }]
+  })
   if (!user) {
-    throw Error('Incorrect email')
+    throw Error('Incorrect username or email')
   }
 
   const match = await bcrypt.compare(password, user.password)
