@@ -1,5 +1,5 @@
 import React from "react";
-import { useAuthContext } from './hooks/useAuthContext'
+import { useAuthContext } from "./hooks/useAuthContext";
 
 //import { useAuthContext } from './hooks/useAuthContext'
 
@@ -22,8 +22,9 @@ import Footer from "./components/footer";
 import LandingPage from "./pages/landingPage";
 import Results from "./pages/search/results";
 import Search from "./pages/search/search";
-import Login from "./components/login";
-import Signup from "./components/signup";
+import Login from "./components/Login";
+import Signup from "./components/Signup";
+
 import Terms from "./components/terms";
 import UserList from "./pages/admin/users";
 import Chat from "./pages/chat/chat";
@@ -68,8 +69,7 @@ function Header() {
 }
 
 const App = () => {
-
-  const { user } = useAuthContext()
+  const { user } = useAuthContext();
   return (
     <>
       <Helmet>
@@ -78,38 +78,29 @@ const App = () => {
 
       <BrowserRouter>
         <Header />
-          <Routes>
-            <Route 
-                path="/" 
-                element={<Home />} 
-              />
-              <Route 
-                path="/login" 
-                element={<Login />} 
-              />
-              <Route 
-                path="/signup" 
-                element={<Signup />} 
-              />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
 
-              {/*  Landing Page Route  
+          {/*  Landing Page Route  
                 <Route path="/" element={<Home />} />
               */}
-            
-              {/* Search Route */}
-              <Route path="/search" element={<Search />} />
-              <Route path="/searchResults" element={<Results />} />
-              <Route path="ToC" element={<Terms />} />
-              {/*  Admin Page Route  */}
-              <Route path="/admin" element={<Admin />} />
-              <Route path="/admin/users" element={<UserList />} />
-              <Route path="/admin/cases" element={<CasesList />} />
-              <Route path="/admin/feedbacks" element={<FeedbacksList />} />
-              {/* Chat Interface */}
-              <Route path="/chat" element={<Chat />} />
-              {/* Testing Route for testing components */}
-              <Route path="/testing" element={<Testing />} />
-          </Routes>
+
+          {/* Search Route */}
+          <Route path="/search" element={<Search />} />
+          <Route path="/searchResults" element={<Results />} />
+          <Route path="ToC" element={<Terms />} />
+          {/*  Admin Page Route  */}
+          <Route path="/admin" element={<Admin />} />
+          <Route path="/admin/users" element={<UserList />} />
+          <Route path="/admin/cases" element={<CasesList />} />
+          <Route path="/admin/feedbacks" element={<FeedbacksList />} />
+          {/* Chat Interface */}
+          <Route path="/chat" element={<Chat />} />
+          {/* Testing Route for testing components */}
+          <Route path="/testing" element={<Testing />} />
+        </Routes>
       </BrowserRouter>
       <Footer />
     </>
