@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Popup from "reactjs-popup";
 import { IoIosCloseCircleOutline } from "react-icons/io";
-import Signup from "./signup";
+import Signup from "./Signup";
 import { useLogin } from "../hooks/useLogin";
 
 const Login = () => {
@@ -15,13 +15,27 @@ const Login = () => {
   };
 
   return (
-    <Popup trigger={<button className="border-2 rounded-xl p-4 py-1.5 border-azure">Log in</button>} modal nested>
+    <Popup
+      trigger={
+        <button className="border-2 rounded-xl p-4 py-1.5 border-azure">
+          Log in
+        </button>
+      }
+      modal
+      nested
+    >
       {(close) => (
         <div className="flex items-center justify-center">
           <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center z-50 backdrop-filter backdrop-blur-lg bg-opacity-25 bg-black">
-            <form className="modal h-[28rem] w-[31.25rem] rounded-2xl bg-white flex flex-col mx-10" onSubmit={handleSubmit}>
+            <form
+              className="modal h-[28rem] w-[31.25rem] rounded-2xl bg-white flex flex-col mx-10"
+              onSubmit={handleSubmit}
+            >
               <div className="flex flex-row align-center justify-end p-1">
-                <IoIosCloseCircleOutline className="text-3xl cursor-pointer" onClick={() => close()} />
+                <IoIosCloseCircleOutline
+                  className="text-3xl cursor-pointer"
+                  onClick={() => close()}
+                />
               </div>
 
               <div className="flex flex-col items-center justify-center">
